@@ -1,23 +1,26 @@
 import * as dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
-import { router } from './routes';
 dotenv.config();
+import express, { Express } from 'express';
+import { router } from './routes';
+import { Server } from 'http';
 
-const PORT = process.env.PORT || 8000;
-const app = express();
+export class App {
+  app: Express;
+  port: number;
+  server: Server;
 
+  constructor() {
+    this.app = express();
+    this.port = Number(process.env.PORT) || 8000;
+  }
 
-app.get('/hello', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+  useRoutes() {
+    this.app.use('/', router);
+  }
 
-app.get('/hello/:id', (req: Request, res: Response) => {
-    const { id } = req.params;
-    res.send(`Your id is "${id}"`);
-});
-
-app.use('/', router);
-
-app.listen(PORT, () => {
-  console.log(`Server is started on ${PORT} port`);
-});
+  public async init() {
+    this.useRoutes();
+    this.server = this.app.listen(this.port);
+    console.log(`Server is started on ${this.port} port`);
+  }
+}
