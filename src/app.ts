@@ -1,5 +1,3 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
 import express, { Express } from 'express';
 import { router } from './routes';
 import { Server } from 'http';
