@@ -1,17 +1,17 @@
 import * as dotenv from 'dotenv';
-import express from 'express';
-import { router } from './routes/index.js';
+import express, { Request, Response } from 'express';
+import { router } from './routes';
 dotenv.config();
 
 const PORT = process.env.PORT || 8000;
 const app = express();
 
 
-app.get('/hello', (_, res) => {
+app.get('/hello', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
-app.get('/hello/:id', (req, res) => {
+app.get('/hello/:id', (req: Request, res: Response) => {
     const { id } = req.params;
     res.send(`Your id is "${id}"`);
 });
