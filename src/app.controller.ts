@@ -1,10 +1,15 @@
+import 'reflect-metadata';
 import { Request, Response } from 'express';
 import { BaseController } from './common/base.controller';
-import { LoggerService } from './logger/logger.service';
+import { injectable } from 'inversify/lib/annotation/injectable';
+import { inject } from 'inversify/lib/annotation/inject';
+import { ILogger } from './logger/logger.interface';
+import { TYPES } from './types';
 
+@injectable()
 export class AppController extends BaseController {
-  constructor(logger: LoggerService) {
-    super(logger);
+  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+    super(loggerService);
     this.bindRoutes([
       { path: '/hello', func: this.hello, method: 'get' },
       { path: '/hello/:id', func: this.helloById, method: 'get' },
