@@ -11,12 +11,7 @@ import { TYPES } from '../types';
 export class ExceptionFilter implements IExceptionFilter {
   constructor(@inject(TYPES.ILogger) private logger: ILogger) {}
 
-  catch(
-    err: Error | HTTPError,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  catch(err: Error | HTTPError, req: Request, res: Response, next: NextFunction): void {
     const errorMessage =
       err instanceof HTTPError
         ? `[${err.context}] Error ${err.statusCode}: ${err.message}`

@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import express, { Express } from 'express';
 import { Server } from 'http';
 import { UserController } from './user/user.controller';
-import { AppController } from './app.controller';
 import { ExceptionFilter } from './error/exception.filter';
 import { ILogger } from './logger/logger.interface';
 import { injectable } from 'inversify/lib/annotation/injectable';
@@ -17,25 +16,23 @@ export class App {
 
   constructor(
     @inject(TYPES.ILogger) private logger: ILogger,
-    @inject(TYPES.AppController) private appController: AppController,
     @inject(TYPES.IUserController) private userController: UserController,
-    @inject(TYPES.ExceptionFilter) private exceptionFilter: ExceptionFilter
+    @inject(TYPES.ExceptionFilter) private exceptionFilter: ExceptionFilter,
   ) {
     this.app = express();
     this.port = 8000;
     this.logger = logger;
   }
 
-  useRoutes() {
-    this.app.use('/', this.appController.router);
+  useRoutes(): void {
     this.app.use('/users', this.userController.router);
   }
 
-  useExceptionFilters() {
+  useExceptionFilters(): void {
     this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 
-  public async init(port?: number) {
+  public async init(port?: number): Promise<void> {
     this.port = port || 8000;
     this.useRoutes();
     this.useExceptionFilters();
