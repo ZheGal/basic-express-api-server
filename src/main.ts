@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import { App } from './app';
 import { LoggerService } from './logger/logger.service';
 import { UserController } from './user/user.controller';
@@ -12,8 +11,8 @@ import { interfaces } from 'inversify/lib/interfaces/interfaces';
 import { IUserController } from './user/user.controller.interface';
 import { IUserService } from './user/user.service.interface';
 import { UserService } from './user/user.service';
-
-dotenv.config();
+import { IConfigService } from './config/config.service.interface';
+import { ConfigService } from './config/config.service';
 
 export interface IBootstrapReturn {
   appContainer: Container;
@@ -21,10 +20,11 @@ export interface IBootstrapReturn {
 }
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
-  bind<ILogger>(TYPES.ILogger).to(LoggerService);
+  bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
   bind<IExceptionFilter>(TYPES.ExceptionFilter).to(ExceptionFilter);
   bind<IUserController>(TYPES.UserController).to(UserController);
   bind<IUserService>(TYPES.UserService).to(UserService);
+  bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
   bind<App>(TYPES.Application).to(App);
 });
 
@@ -33,8 +33,7 @@ const bootstrap = (): IBootstrapReturn => {
   appContainer.load(appBindings);
 
   const app = appContainer.get<App>(TYPES.Application);
-  const port = Number(process.env.PORT);
-  app.init(port);
+  app.init();
 
   return { app, appContainer };
 };
