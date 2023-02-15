@@ -6,9 +6,10 @@ import { ILogger } from '../logger/logger.interface';
 import { injectable } from 'inversify/lib/annotation/injectable';
 import { inject } from 'inversify/lib/annotation/inject';
 import { TYPES } from '../types';
+import { IUserController } from './user.controller.interface';
 
 @injectable()
-export class UserController extends BaseController {
+export class UserController extends BaseController implements IUserController {
   constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
     super(loggerService);
     this.bindRoutes([
