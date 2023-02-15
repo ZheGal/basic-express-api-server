@@ -8,10 +8,16 @@ import { TYPES } from '../types';
 import { IUserController } from './user.controller.interface';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UserLoginDto } from './dto/user-login.dto';
+import { User } from './user.entity';
+import { IUserService } from './user.service.interface';
+import { HTTPError } from '../error/http-error.class';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
-  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+  constructor(
+    @inject(TYPES.ILogger) private loggerService: ILogger,
+    @inject(TYPES.UserService) private userService: IUserService,
+  ) {
     super(loggerService);
     this.bindRoutes([
       { path: '/register', func: this.register, method: 'post' },
@@ -19,9 +25,16 @@ export class UserController extends BaseController implements IUserController {
     ]);
   }
 
-  register(req: Request<{}, {}, UserRegisterDto>, res: Response, next: NextFunction): void {
-    console.log(req.body);
-    this.ok(res, 'Register route');
+  async register(
+    { body }: Request<{}, {}, UserRegisterDto>,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    const user = await this.userService.createUser(body);
+    if (!user) {
+      return next(new HTTPError(422, 'The user already exists'));
+    }
+    this.ok(res, { email: user.email, name: user.name });
   }
 
   login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {
