@@ -7,6 +7,7 @@ import { ILogger } from './logger/logger.interface';
 import { injectable } from 'inversify/lib/annotation/injectable';
 import { inject } from 'inversify/lib/annotation/inject';
 import { TYPES } from './types';
+import { json } from 'body-parser';
 
 @injectable()
 export class App {
@@ -24,6 +25,10 @@ export class App {
     this.logger = logger;
   }
 
+  useMiddleware(): void {
+    this.app.use(json());
+  }
+
   useRoutes(): void {
     this.app.use('/users', this.userController.router);
   }
@@ -34,6 +39,7 @@ export class App {
 
   public async init(port?: number): Promise<void> {
     this.port = port || 8000;
+    this.useMiddleware();
     this.useRoutes();
     this.useExceptionFilters();
     this.server = this.app.listen(this.port);
