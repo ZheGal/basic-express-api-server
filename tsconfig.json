@@ -13,5 +13,7 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "skipLibCheck": true
-  }
+  },
+  "include": ["./src"],
+  "files": ["./types/custom.d.ts"]
 }
