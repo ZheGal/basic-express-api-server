@@ -13,6 +13,7 @@ import { HTTPError } from '../error/http-error.class';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/config.service.interface';
+import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -39,6 +40,7 @@ export class UserController extends BaseController implements IUserController {
         path: '/info',
         func: this.info,
         method: 'get',
+        middlewares: [new GuardMiddleware()],
       },
     ]);
   }
@@ -69,7 +71,12 @@ export class UserController extends BaseController implements IUserController {
   }
 
   async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
-    this.ok(res, { email: user });
+    const userInfo = await this.userService.getUserByEmail(user);
+    if (!userInfo) {
+      return next(new HTTPError(401, 'Authorization failed'));
+    }
+    const { id, email } = userInfo;
+    this.ok(res, { id, email });
   }
 
   private signJWT(email: string, secret: string): Promise<string> {
