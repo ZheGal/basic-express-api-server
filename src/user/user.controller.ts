@@ -13,7 +13,7 @@ import { HTTPError } from '../error/http-error.class';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/config.service.interface';
-import { GuardMiddleware } from '../common/guard.middleware';
+import { AuthGuard } from '../common/auth.guard';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -40,7 +40,7 @@ export class UserController extends BaseController implements IUserController {
         path: '/info',
         func: this.info,
         method: 'get',
-        middlewares: [new GuardMiddleware()],
+        middlewares: [new AuthGuard()],
       },
     ]);
   }
@@ -73,7 +73,7 @@ export class UserController extends BaseController implements IUserController {
   async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
     const userInfo = await this.userService.getUserByEmail(user);
     if (!userInfo) {
-      return next(new HTTPError(401, 'Authorization failed'));
+      return next(new HTTPError(404, 'User not found'));
     }
     const { id, email } = userInfo;
     this.ok(res, { id, email });
