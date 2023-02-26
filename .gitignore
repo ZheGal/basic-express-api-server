@@ -4,3 +4,4 @@
 .env
 /prisma/database.db
 /prisma/database.db-journal
+/coverage

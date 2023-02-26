@@ -10,7 +10,7 @@
     "dev": "nodemon",
     "generate": "prisma generate",
     "test": "jest",
-    "test:e2e": "jest --config jest.e2e.config.ts"
+    "test:e2e": "jest --config jest.e2e.config.ts --coverage"
   },
   "keywords": [],
   "author": "",
